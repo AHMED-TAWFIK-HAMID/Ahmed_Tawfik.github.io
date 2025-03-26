@@ -1,127 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weather App - Enhanced Design</title>
-  <!-- Include Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iOS-like Weather App</title>
+  <!-- Using San Francisco font if available; otherwise, a similar sans-serif -->
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+    
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #4a90e2, #1451a1);
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       color: #fff;
-      padding: 20px;
     }
-    .card {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 15px;
-      padding: 30px;
-      width: 100%;
+    .weather-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 30px;
+      padding: 40px 30px;
+      width: 90%;
       max-width: 400px;
       text-align: center;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      animation: fadeIn 1s ease-out;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: scale(0.9);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-    h1 {
+    .weather-card h1 {
+      font-size: 36px;
+      font-weight: 500;
       margin-bottom: 20px;
-      font-weight: 600;
     }
-    input {
+    .weather-card input {
       width: 80%;
-      padding: 12px;
+      padding: 15px;
       border: none;
       border-radius: 25px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       font-size: 16px;
+      text-align: center;
     }
-    button {
-      padding: 12px 25px;
+    .weather-card button {
+      padding: 15px 30px;
       border: none;
       border-radius: 25px;
-      background: #ff8c00;
+      background-color: #ff9500;
       color: #fff;
-      font-size: 16px;
+      font-size: 18px;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background-color 0.3s ease;
     }
-    button:hover {
-      background: #e07b00;
+    .weather-card button:hover {
+      background-color: #e08900;
     }
     .weather-icon {
-      font-size: 64px;
-      margin: 15px 0;
+      font-size: 80px;
+      margin: 20px 0;
     }
     .info {
+      font-size: 20px;
       margin: 10px 0;
-      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Current Weather</h1>
-    <input type="text" id="city" placeholder="Enter city name">
+  <div class="weather-card">
+    <h1>Weather</h1>
+    <input type="text" id="city" placeholder="Enter city" />
     <button onclick="getWeather()">Show Weather</button>
     <div class="info" id="location"></div>
     <div class="weather-icon" id="weatherIcon">⛅</div>
     <div class="info" id="temperature"></div>
     <div class="info" id="condition"></div>
   </div>
-  
+
   <script>
     function getWeather() {
       const apiKey = "99a19958bf42418aa7b150846252603"; 
       const city = document.getElementById("city").value;
       
-      if (city === "") {
+      if (!city) {
         alert("Please enter a city name!");
         return;
       }
       
       fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`)
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById("location").innerText = `📍 ${data.location.name}, ${data.location.country}`;
-        document.getElementById("temperature").innerText = `🌡 Temperature: ${data.current.temp_c}°C`;
-        document.getElementById("condition").innerText = `🌥 Condition: ${data.current.condition.text}`;
-        
-        // Update the weather icon dynamically based on condition text
-        let icon = "⛅"; 
-        if (data.current.condition.text.includes("Sunny")) icon = "☀️";
-        else if (data.current.condition.text.includes("Cloudy")) icon = "☁️";
-        else if (data.current.condition.text.includes("Rain")) icon = "🌧️";
-        else if (data.current.condition.text.includes("Snow")) icon = "❄️";
-        else if (data.current.condition.text.includes("Storm")) icon = "⛈️";
-        
-        document.getElementById("weatherIcon").innerText = icon;
-      })
-      .catch(error => {
-        alert("City not found! Please try again.");
-        console.log("Error:", error);
-      });
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("location").innerText = `${data.location.name}, ${data.location.country}`;
+          document.getElementById("temperature").innerText = `${data.current.temp_c}°C`;
+          document.getElementById("condition").innerText = data.current.condition.text;
+          
+          // Update the weather icon based on the condition text
+          let icon = "⛅"; 
+          if (data.current.condition.text.includes("Sunny")) icon = "☀️";
+          else if (data.current.condition.text.includes("Cloudy")) icon = "☁️";
+          else if (data.current.condition.text.includes("Rain")) icon = "🌧️";
+          else if (data.current.condition.text.includes("Snow")) icon = "❄️";
+          else if (data.current.condition.text.includes("Storm")) icon = "⛈️";
+          
+          document.getElementById("weatherIcon").innerText = icon;
+        })
+        .catch(error => {
+          alert("City not found! Please try again.");
+          console.log("Error:", error);
+        });
     }
   </script>
 </body>
