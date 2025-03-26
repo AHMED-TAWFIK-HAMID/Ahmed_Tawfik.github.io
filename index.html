@@ -3,86 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔮 Discover Your Personality!</title>
+    <title>Weather App</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f8f9fa; color: #333; }
-        .container { max-width: 600px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); }
-        h1 { color: #007bff; }
-        .question { font-size: 18px; margin: 20px 0; opacity: 0; transition: opacity 0.5s ease-in-out; }
-        .options { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
-        .options button { padding: 10px 15px; font-size: 16px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
-        .fade-in { opacity: 1; }
-        .slide-in { opacity: 1; transform: translateY(0); }
-        #result { margin-top: 20px; font-size: 20px; color: #28a745; }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f0f8ff; }
+        .container { max-width: 400px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        input, button { padding: 10px; font-size: 16px; margin: 10px; }
+        button { cursor: pointer; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>🔮 Discover Your Personality!</h1>
-        <p class="question" id="question"></p>
-        <div class="options" id="options"></div>
-        <p id="result"></p>
+        <h1>Weather App 🌤</h1>
+        <input type="text" id="city" placeholder="Enter city name">
+        <button onclick="getWeather()">Get Weather</button>
+        <h2 id="location"></h2>
+        <p id="temperature"></p>
+        <p id="condition"></p>
     </div>
 
     <script>
-        let score = { logical: 0, creative: 0, social: 0 };
-        let questions = [
-            { text: "What is your favorite color?", options: [{ answer: "🔵 Blue", type: "logical" }, { answer: "🔴 Red", type: "creative" }, { answer: "🟢 Green", type: "social" }] },
-            { text: "What is your favorite animal?", options: [{ answer: "🐶 Dog", type: "social" }, { answer: "🐱 Cat", type: "logical" }, { answer: "🦅 Eagle", type: "creative" }] },
-            { text: "What do you prefer in your free time?", options: [{ answer: "📚 Reading", type: "logical" }, { answer: "🎮 Gaming", type: "creative" }, { answer: "🏃 Sports", type: "social" }] },
-            { text: "How do you deal with problems?", options: [{ answer: "🔍 Logical analysis", type: "logical" }, { answer: "💡 Creative thinking", type: "creative" }, { answer: "🤝 Seeking advice", type: "social" }] }
-        ];
+        function getWeather() {
+            const apiKey = "99a19958bf42418aa7b150846252603"; 
+            const city = document.getElementById("city").value;
 
-        let currentQuestion = 0;
-
-        function loadQuestion() {
-            if (currentQuestion < questions.length) {
-                const questionText = document.getElementById("question");
-                const optionsDiv = document.getElementById("options");
-
-                // Hide text and options first
-                questionText.classList.remove('fade-in');
-                optionsDiv.classList.remove('slide-in');
-
-                setTimeout(() => {
-                    questionText.innerText = questions[currentQuestion].text;
-                    questionText.classList.add('fade-in');
-
-                    optionsDiv.innerHTML = ""; // Clear previous buttons
-                    questions[currentQuestion].options.forEach(option => {
-                        let button = document.createElement("button");
-                        button.innerText = option.answer;
-                        button.onclick = () => selectAnswer(option.type);
-                        optionsDiv.appendChild(button);
-                    });
-
-                    setTimeout(() => optionsDiv.classList.add('slide-in'), 100); // Show options smoothly
-                }, 300);
-            } else {
-                showResult();
+            if (city === "") {
+                alert("Please enter a city name!");
+                return;
             }
+
+            fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("location").innerText = `📍 ${data.location.name}, ${data.location.country}`;
+                document.getElementById("temperature").innerText = `🌡 Temperature: ${data.current.temp_c}°C`;
+                document.getElementById("condition").innerText = `🌥 Condition: ${data.current.condition.text}`;
+            })
+            .catch(error => {
+                alert("City not found! Please try again.");
+                console.log("Error:", error);
+            });
         }
-
-        function selectAnswer(type) {
-            score[type]++;
-            currentQuestion++;
-            loadQuestion();
-        }
-
-        function showResult() {
-            let personality = "🤔 Mysterious personality!";
-            let maxScore = Math.max(score.logical, score.creative, score.social);
-
-            if (score.logical === maxScore) personality = "🧠 Logical and wise!";
-            else if (score.creative === maxScore) personality = "🎨 Creative and innovative!";
-            else if (score.social === maxScore) personality = "😊 Social and friendly!";
-
-            document.getElementById("question").innerText = "🎉 Your Personality Result:";
-            document.getElementById("options").innerHTML = "";
-            document.getElementById("result").innerText = personality;
-        }
-
-        loadQuestion();
     </script>
+
 </body>
 </html>
